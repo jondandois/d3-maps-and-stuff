@@ -34,7 +34,6 @@ var div = d3.select("body")
 // load in census tracts
 d3.json("data/baltimore-city-census-tracts.json", load_and_draw_census_tracts);
 
-
 var levels = [];
 var property = 'Population';
 // callback for catching the json feature collection and adding it to the page
@@ -53,7 +52,9 @@ function load_and_draw_census_tracts (json_fc) {
     .attr("d", path)
     .style("stroke", "#fff")
     .style("stroke-width", "1")
-    .style("fill", color_path);
+    .style("fill", color_path)
+    .on("mouseover", catch_mouse_over)
+    .on('mouseout', catch_mouse_out);
 }
 
 // color the data object based on its properties
@@ -106,4 +107,21 @@ function reproject_map_to_data (map_data) {
   projection
     .scale(s)
     .translate(t);
+}
+
+// do stuff on mouse over
+function catch_mouse_over (d) {
+  div.transition()
+     .duration(200)
+     .style("opacity", .9);
+     div.text(`Census 2010 Population: ${d.properties[property]}`)
+     .style("left", (d3.event.pageX) + "px")
+     .style("top", (d3.event.pageY - 28) + "px");
+}
+
+// do stuff on mouse out`
+function catch_mouse_out (d) {
+  div.transition()
+   .duration(500)
+   .style("opacity", 0);
 }
