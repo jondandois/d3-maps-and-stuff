@@ -2,6 +2,7 @@
 window.Dashboard = {
   d3: {},
   data: null,
+  legend: {},
   map: {}
 };
 
@@ -10,8 +11,8 @@ window.onload = initialize;
 //initialize map config
 function initialize () {
   //Width and height of map
-  Dashboard.map.width = 400;
-  Dashboard.map.height = 400;
+  Dashboard.map.width = 500;
+  Dashboard.map.height = 500;
 
   // maryland state plane
   Dashboard.map.projection = d3.geo.conicConformal()
@@ -36,8 +37,13 @@ function initialize () {
               .attr("width", Dashboard.map.width)
               .attr("height", Dashboard.map.height);
 
+  Dashboard.legend.svg = d3.select("#legend")
+              .append("svg")
+              .attr("width", 100)
+              .attr("height", 250);
+
   // Append Div for tooltip to SVG
-  Dashboard.d3.div = d3.select("#map")
+  Dashboard.d3.div = d3.select("#legend")
               .append("div")
               .attr("class", "mouseover-text")
               .style("opacity", 0);
@@ -77,8 +83,10 @@ function populate_dropdown(){
 
 // function for drawing features on the map based on a property
 function show_property_on_map(features, property) {
-  var range = get_property_range(features, property);
-  Dashboard.levels = range_to_levels(range, Dashboard.d3.steps);
+  // compute the levels and legend based on the Total Population field, only once
+  if (Dashboard.levels.length === 0){
+    build_levels(features);
+  }
 
   // Bind the data to the SVG and create one path per GeoJSON feature
   Dashboard.map.svg.selectAll("path").remove();
@@ -92,22 +100,60 @@ function show_property_on_map(features, property) {
     .style("fill", color_path)
     .on("mouseover", catch_mouse_over)
     .on('mouseout', catch_mouse_out);
+
+  build_legend();
+}
+
+// build out the levels and a legend
+function build_levels(features){
+  var range = get_property_range(features, 'Population');
+  Dashboard.levels = range_to_levels(range, Dashboard.d3.steps);
+}
+function build_legend (argument) {
+  var legendRectSize = 18;
+  var legendSpacing = 4;
+  var color_domain = Dashboard.d3.color.domain;
+  var legend = Dashboard.legend.svg.selectAll('.legend')
+                  .data(Dashboard.levels)
+                  .enter()
+                  .append('g')
+                  .attr('class', 'legend')
+                  .attr('transform', function(d, i) {
+                    var height = legendRectSize + legendSpacing;
+                    var horz = 0;
+                    var vert = i * height;
+                    return 'translate(' + horz + ',' + vert + ')';
+                  });
+
+  legend.append('rect')
+        .attr('width', legendRectSize)
+        .attr('height', legendRectSize)
+        .style('fill', color_from_value)
+        .style('stroke', color_from_value);
+
+  legend.append('text')
+        .attr('x', legendRectSize + legendSpacing)
+        .attr('y', legendRectSize - legendSpacing)
+        .text(function(d) { return parseInt(d); });
 }
 
 // color the data object based on its properties
 function color_path (data) {
   // Get data value
   var value = data.properties[Dashboard.property];
-
-  if (value) {
-    var value_level;
-    Dashboard.levels.map( (l, i) => { if ( l < value) {value_level = i;}})
+  return color_from_value(value);
+}
+// return a color from a value
+function color_from_value(value){
+  var no_data = "rgb(213,222,217)";
+  if (value > 0 ) {
     //If value exists…
-    // console.log(color(value_level));
+    var value_level = 0;
+    Dashboard.levels.map( (l, i) => { if ( l < value) {value_level = i;}});
     return Dashboard.d3.color(value_level);
   } else {
     //If value is undefined…
-    return "rgb(213,222,217)";
+    return no_data;
   }
 }
 
@@ -116,8 +162,8 @@ function get_property_range(features, property) {
   var value_max = 0;
   features.map(function(f){ value_max = (f.properties[property] > value_max ? f.properties[property] : value_max); });
 
-  var value_min = value_max;
-  features.map(function(f){ value_min = (f.properties[property] < value_min ? f.properties[property] : value_min); });
+  var value_min = 0;
+  // features.map(function(f){ value_min = (f.properties[property] < value_min ? f.properties[property] : value_min); });
 
   return {min: value_min, max: value_max};
 }
