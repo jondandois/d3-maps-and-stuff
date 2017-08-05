@@ -40,8 +40,6 @@ Dashboard.chart.plot_data = function plot_data (data) {
       .attr("transform", "rotate(-45)")
       .style("text-anchor", "end");
 
-
-
   Dashboard.chart.svg.append("g")
       .attr("class", "y axis")
       .call(d3.svg.axis().scale(Dashboard.chart.y).orient("left"));
