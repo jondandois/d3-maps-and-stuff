@@ -31,19 +31,24 @@ function initialize () {
                 .range([low_color,high_color])
 
   //Create SVG element and append map to the SVG
-  Dashboard.map.svg = d3.select("body")
+  Dashboard.map.svg = d3.select("#map")
               .append("svg")
               .attr("width", Dashboard.map.width)
               .attr("height", Dashboard.map.height);
 
   // Append Div for tooltip to SVG
-  Dashboard.d3.div = d3.select("body")
+  Dashboard.d3.div = d3.select("#map")
               .append("div")
               .attr("class", "mouseover-text")
               .style("opacity", 0);
 
   Dashboard.levels = [];
+
+  Dashboard.properties = ['Population', 'White', 'Blk_AfAm', 'AmInd_AkNa', 'Asian', 'PopOver18']
+  // default first option
   Dashboard.property = 'Population';
+
+  document.getElementById('filter-dropdown').addEventListener('change', catch_filter_change);
 
   // load in census tracts
   d3.json("data/baltimore-city-census-tracts.json", load_and_draw_census_tracts);
@@ -52,15 +57,33 @@ function initialize () {
 // callback for catching the json feature collection and adding it to the page
 function load_and_draw_census_tracts (json_fc) {
   Dashboard.data = json_fc;
-
+  populate_dropdown(Dashboard.data);
   reproject_map_to_data(json_fc);
+  show_property_on_map(json_fc.features, Dashboard.property);
+}
 
-  var range = get_property_range(json_fc.features, Dashboard.property);
+// populate the dropdown based on data
+function populate_dropdown(){
+  Dashboard.properties.forEach( function(property) {
+    var new_option = document.createElement('option');
+    new_option.setAttribute('value', property);
+    new_option.innerText = property;
+    if (property === Dashboard.property){
+      new_option.selected = true;
+    }
+    document.getElementById('filter-dropdown').appendChild(new_option);
+  });
+}
+
+// function for drawing features on the map based on a property
+function show_property_on_map(features, property) {
+  var range = get_property_range(features, property);
   Dashboard.levels = range_to_levels(range, Dashboard.d3.steps);
 
   // Bind the data to the SVG and create one path per GeoJSON feature
+  Dashboard.map.svg.selectAll("path").remove();
   Dashboard.map.svg.selectAll("path")
-    .data(json_fc.features)
+    .data(features)
     .enter()
     .append("path")
     .attr("d", Dashboard.d3.path)
@@ -128,7 +151,7 @@ function catch_mouse_over (d) {
   Dashboard.d3.div.transition()
     .duration(200)
     .style("opacity", .9);
-    Dashboard.d3.div.text(`Census 2010 Population: ${d.properties[Dashboard.property]}`)
+    Dashboard.d3.div.text(`Census 2010 Count ${Dashboard.property}: ${d.properties[Dashboard.property]}`)
     .style("left", (d3.event.pageX) + "px")
     .style("top", (d3.event.pageY - 28) + "px");
 }
@@ -138,4 +161,15 @@ function catch_mouse_out (d) {
   Dashboard.d3.div.transition()
    .duration(500)
    .style("opacity", 0);
+}
+
+// callback to catch change to the dropdown and do stuff
+
+function catch_filter_change (event) {
+  // get the index of the selected item
+  var selected = this.selectedIndex;
+  if (Dashboard.properties[selected] !== Dashboard.property){
+    Dashboard.property = Dashboard.properties[selected];
+    show_property_on_map(Dashboard.data.features, Dashboard.property);
+  }
 }

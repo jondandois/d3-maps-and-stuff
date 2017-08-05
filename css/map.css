@@ -25,3 +25,12 @@ body {
   left:800px;
   top:350px;
 }
+.main{
+  position: relative;
+}
+.header{
+  position: absolute;
+}
+.map{
+  position: relative;
+}
