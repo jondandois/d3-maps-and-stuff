@@ -1,55 +1,69 @@
-//Width and height of map
-var width = 960;
-var height = 500;
+//create a namespace for the dashboard
+window.Dashboard = {
+  d3: {},
+  data: null,
+  map: {}
+};
 
-// maryland state plane
-var projection = d3.geo.conicConformal()
-  .parallels([38 + 18 / 60, 39 + 27 / 60])
-  .rotate([77, -37 - 40 / 60]);
+window.onload = initialize;
 
-// Define path generator
-var path = d3.geo.path()
-                 .projection(projection);
+//initialize map config
+function initialize () {
+  //Width and height of map
+  Dashboard.map.width = 400;
+  Dashboard.map.height = 400;
 
-// Define linear scale for output
-var steps = 10;
-var low_color = '#DD503C';
-var high_color = '#497B94';
-var color = d3.scale.linear()
-              .domain([0, steps - 1])
-              .range([low_color,high_color])
+  // maryland state plane
+  Dashboard.map.projection = d3.geo.conicConformal()
+    .parallels([38 + 18 / 60, 39 + 27 / 60])
+    .rotate([77, -37 - 40 / 60]);
 
-//Create SVG element and append map to the SVG
-var svg = d3.select("body")
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height);
+  // Define path generator
+  Dashboard.d3.path = d3.geo.path()
+                   .projection(Dashboard.map.projection);
 
-// Append Div for tooltip to SVG
-var div = d3.select("body")
-            .append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0);
+  // Define linear scale for output
+  Dashboard.d3.steps = 10;
+  var low_color = '#DD503C';
+  var high_color = '#497B94';
+  Dashboard.d3.color = d3.scale.linear()
+                .domain([0, Dashboard.d3.steps - 1])
+                .range([low_color,high_color])
 
-// load in census tracts
-d3.json("data/baltimore-city-census-tracts.json", load_and_draw_census_tracts);
+  //Create SVG element and append map to the SVG
+  Dashboard.map.svg = d3.select("body")
+              .append("svg")
+              .attr("width", Dashboard.map.width)
+              .attr("height", Dashboard.map.height);
 
-var levels = [];
-var property = 'Population';
+  // Append Div for tooltip to SVG
+  Dashboard.d3.div = d3.select("body")
+              .append("div")
+              .attr("class", "mouseover-text")
+              .style("opacity", 0);
+
+  Dashboard.levels = [];
+  Dashboard.property = 'Population';
+
+  // load in census tracts
+  d3.json("data/baltimore-city-census-tracts.json", load_and_draw_census_tracts);
+}
+
 // callback for catching the json feature collection and adding it to the page
 function load_and_draw_census_tracts (json_fc) {
+  Dashboard.data = json_fc;
 
   reproject_map_to_data(json_fc);
 
-  var range = get_property_range(json_fc.features, property);
-  levels = range_to_levels(range, steps);
+  var range = get_property_range(json_fc.features, Dashboard.property);
+  Dashboard.levels = range_to_levels(range, Dashboard.d3.steps);
 
   // Bind the data to the SVG and create one path per GeoJSON feature
-  svg.selectAll("path")
+  Dashboard.map.svg.selectAll("path")
     .data(json_fc.features)
     .enter()
     .append("path")
-    .attr("d", path)
+    .attr("d", Dashboard.d3.path)
     .style("stroke", "#fff")
     .style("stroke-width", "1")
     .style("fill", color_path)
@@ -60,14 +74,14 @@ function load_and_draw_census_tracts (json_fc) {
 // color the data object based on its properties
 function color_path (data) {
   // Get data value
-  var value = data.properties[property];
+  var value = data.properties[Dashboard.property];
 
   if (value) {
     var value_level;
-    levels.map( (l, i) => { if ( l < value) {value_level = i;}})
+    Dashboard.levels.map( (l, i) => { if ( l < value) {value_level = i;}})
     //If value exists…
     // console.log(color(value_level));
-    return color(value_level);
+    return Dashboard.d3.color(value_level);
   } else {
     //If value is undefined…
     return "rgb(213,222,217)";
@@ -96,32 +110,32 @@ function range_to_levels (range, steps) {
 
 // reproject the map to the data path
 function reproject_map_to_data (map_data) {
-  projection
-    .scale(1)
-    .translate([0,0]);
+  Dashboard.map.projection
+              .scale(1)
+              .translate([0,0]);
 
-  var b = path.bounds(map_data),
-      s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
-      t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+  var b = Dashboard.d3.path.bounds(map_data),
+      s = .95 / Math.max((b[1][0] - b[0][0]) / Dashboard.map.width, (b[1][1] - b[0][1]) / Dashboard.map.height),
+      t = [(Dashboard.map.width - s * (b[1][0] + b[0][0])) / 2, (Dashboard.map.height - s * (b[1][1] + b[0][1])) / 2];
 
-  projection
-    .scale(s)
-    .translate(t);
+  Dashboard.map.projection
+              .scale(s)
+              .translate(t);
 }
 
 // do stuff on mouse over
 function catch_mouse_over (d) {
-  div.transition()
-     .duration(200)
-     .style("opacity", .9);
-     div.text(`Census 2010 Population: ${d.properties[property]}`)
-     .style("left", (d3.event.pageX) + "px")
-     .style("top", (d3.event.pageY - 28) + "px");
+  Dashboard.d3.div.transition()
+    .duration(200)
+    .style("opacity", .9);
+    Dashboard.d3.div.text(`Census 2010 Population: ${d.properties[Dashboard.property]}`)
+    .style("left", (d3.event.pageX) + "px")
+    .style("top", (d3.event.pageY - 28) + "px");
 }
 
 // do stuff on mouse out`
 function catch_mouse_out (d) {
-  div.transition()
+  Dashboard.d3.div.transition()
    .duration(500)
    .style("opacity", 0);
 }
