@@ -4,6 +4,17 @@
     <meta charset="utf-8">
     <script type="text/javascript" src="js/d3.v3.min.js"></script>
     <link rel="stylesheet" href="css/map.css">
+    <script type="text/javascript">
+      // dashboard namespace
+      window.Dashboard = {
+        d3: {},
+        data: null,
+        initialize: null,
+        legend: {},
+        map: {},
+        utils: {}
+      };
+    </script>
   </head>
   <body>
   <div class="wrapper">
@@ -22,7 +33,13 @@
       </div>
     </div>
   </div>
-    <script type="text/javascript" src="js/choropleth.js"></script>
+    <script type="text/javascript" src="js/initialize.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/map.js"></script>
     <script type="text/javascript" src="js/chart.js"></script>
+    <script type="text/javascript" src="js/legend.js"></script>
+    <script type="text/javascript">
+      window.onload = Dashboard.initialize;
+    </script>
   </body>
 </html>
