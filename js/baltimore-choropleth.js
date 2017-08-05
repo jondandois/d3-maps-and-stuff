@@ -37,6 +37,7 @@ function initialize () {
               .attr("width", Dashboard.map.width)
               .attr("height", Dashboard.map.height);
 
+  // create SVG for legend
   Dashboard.legend.svg = d3.select("#legend")
               .append("svg")
               .attr("width", 100)
@@ -50,7 +51,8 @@ function initialize () {
 
   Dashboard.levels = [];
 
-  Dashboard.properties = ['Population', 'White', 'Blk_AfAm', 'AmInd_AkNa', 'Asian', 'PopOver18']
+
+  Dashboard.properties = ["Population", "White","Blk_AfAm","AmInd_AkNa","Asian","NatHaw_Pac","Other_Race","TwoOrMore","Hisp_Lat"]
   // default first option
   Dashboard.property = 'Population';
 
@@ -194,6 +196,7 @@ function reproject_map_to_data (map_data) {
 
 // do stuff on mouse over
 function catch_mouse_over (d) {
+  Dashboard.chart.plot_data(d);
   Dashboard.d3.div.transition()
     .duration(200)
     .style("opacity", .9);
