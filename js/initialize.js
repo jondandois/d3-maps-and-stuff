@@ -20,11 +20,28 @@ Dashboard.initialize = function initialize () {
                 .domain([0, Dashboard.d3.steps - 1])
                 .range([low_color,high_color])
 
+  var zoom = d3.behavior.zoom()
+    .scaleExtent([1, 10])
+    .on("zoom", Dashboard.utils.zoomed);
+
+  var margin = {top: -5, right: -5, bottom: -5, left: -5},
+    width = Dashboard.map.width - margin.left - margin.right,
+    height = Dashboard.map.height - margin.top - margin.bottom;
+
+  Dashboard.container.svg = d3.select("#map")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.right + ")")
+      .call(zoom);
+
   //Create SVG element and append map to the SVG
-  Dashboard.map.svg = d3.select("#map")
+  Dashboard.map.svg = Dashboard.container.svg
               .append("svg")
               .attr("width", Dashboard.map.width)
-              .attr("height", Dashboard.map.height);
+              .attr("height", Dashboard.map.height)
+              .call(zoom);
 
   // create SVG for legend
   Dashboard.legend.svg = d3.select("#legend")
@@ -51,7 +68,7 @@ Dashboard.initialize = function initialize () {
   Dashboard.property = 'Total_Deaths';
 
   document.getElementById('filter-dropdown').addEventListener('change', Dashboard.utils.catch_filter_change);
-
+document.getElementById('reset-map').addEventListener('click', Dashboard.utils.catch_button_click);
   // load in census tracts
   d3.json("data/baltimore-city-census-tracts-deaths.json", Dashboard.map.load_and_draw_census_tracts);
 }

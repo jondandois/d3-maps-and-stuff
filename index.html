@@ -7,6 +7,7 @@
     <script type="text/javascript">
       // dashboard namespace
       window.Dashboard = {
+        container: {},
         d3: {},
         data: null,
         initialize: null,
@@ -21,6 +22,9 @@
     <div class="header">
       Choose a value to display on the map
       <select class="filter-dropdown" id="filter-dropdown"></select>
+      <button id="reset-map" class="button" data-target="reset_map">
+        Reset Map
+      </button>
     </div>
     <div class="main">
       <div class="left">

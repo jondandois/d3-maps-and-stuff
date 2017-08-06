@@ -101,7 +101,22 @@ Dashboard.utils = (function(){
         levels[i] = (i+1)*step + range.min;
       }
       return levels;
-    }
+    },
+
+    // zoom functionality
+    zoomed: function(){
+      Dashboard.container.svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    },
+
+    // catch button clicks
+    catch_button_click: function(event){
+      Dashboard.utils[event.currentTarget.dataset['target']]();
+    },
+
+    // reset map state
+    reset_map: function(){
+      Dashboard.container.svg.attr("transform", "translate(0,0)scale(1)");
+    },
 
   };
 })();
