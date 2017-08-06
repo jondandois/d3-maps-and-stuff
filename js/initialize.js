@@ -15,23 +15,23 @@ Dashboard.initialize = function initialize () {
   Dashboard.map.height = 500;
 
   // maryland state plane
-  Dashboard.map.projection = d3.geo.conicConformal()
+  Dashboard.map.projection = d3.geoConicConformal()
     .parallels([38 + 18 / 60, 39 + 27 / 60])
     .rotate([77, -37 - 40 / 60]);
 
   // Define path generator
-  Dashboard.d3.path = d3.geo.path()
+  Dashboard.d3.path = d3.geoPath()
                    .projection(Dashboard.map.projection);
 
   // Define linear scale for output
   Dashboard.d3.steps = 10;
   var low_color = '#DD503C';
   var high_color = '#497B94';
-  Dashboard.d3.color = d3.scale.linear()
+  Dashboard.d3.color = d3.scaleLinear()
                 .domain([0, Dashboard.d3.steps - 1])
                 .range([low_color,high_color]);
 
-  var zoom = d3.behavior.zoom()
+  var zoom = d3.zoom()
     .scaleExtent([1, 10])
     .on("zoom", Dashboard.utils.zoomed);
 

@@ -105,7 +105,7 @@ Dashboard.utils = (function(){
 
     // zoom functionality
     zoomed: function(){
-      Dashboard.container.svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+      Dashboard.container.svg.attr("transform", `translate(${d3.event.transform.x},${d3.event.transform.y})scale(${d3.event.transform.k})`);
     },
 
     // catch button clicks
