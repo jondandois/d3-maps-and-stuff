@@ -18,7 +18,7 @@ Dashboard.initialize = function initialize () {
   var high_color = '#497B94';
   Dashboard.d3.color = d3.scale.linear()
                 .domain([0, Dashboard.d3.steps - 1])
-                .range([low_color,high_color])
+                .range([low_color,high_color]);
 
   var zoom = d3.behavior.zoom()
     .scaleExtent([1, 10])
@@ -63,7 +63,7 @@ Dashboard.initialize = function initialize () {
                       "Mar_2015","Apr_2015","May_2015","Jun_2015","Jul_2015","Aug_2015","Sep_2015",
                       "Oct_2015","Nov_2015","Dec_2015","Jan_2016","Feb_2016","Mar_2016","Apr_2016",
                       "May_2016","Jun_2016","Jul_2016","Aug_2016","Sep_2016","Oct_2016","Nov_2016",
-                      "Dec_2016","Jan_2017","Feb_2017","Mar_2017","Apr_2017","May_2017","Jun_2017","Jul_2017"]
+                      "Dec_2016","Jan_2017","Feb_2017","Mar_2017","Apr_2017","May_2017","Jun_2017","Jul_2017"];
   // default first option
   Dashboard.property = 'Total_Deaths';
 
@@ -71,4 +71,4 @@ Dashboard.initialize = function initialize () {
 document.getElementById('reset-map').addEventListener('click', Dashboard.utils.catch_button_click);
   // load in census tracts
   d3.json("data/baltimore-city-census-tracts-deaths.json", Dashboard.map.load_and_draw_census_tracts);
-}
+};

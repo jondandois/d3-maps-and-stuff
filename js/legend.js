@@ -24,4 +24,4 @@ Dashboard.legend.build_legend = function build_legend (argument) {
         .attr('x', legendRectSize + legendSpacing)
         .attr('y', legendRectSize - legendSpacing)
         .text(function(d) { return parseInt(d); });
-}
+};

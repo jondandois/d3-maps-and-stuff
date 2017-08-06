@@ -55,4 +55,4 @@ Dashboard.chart.plot_data = function plot_data (data) {
       .attr("width", Dashboard.chart.x.rangeBand())
       .attr("y", function(d) { return Dashboard.chart.y(d.value); })
       .attr("height", function(d) { return Dashboard.chart.height - Dashboard.chart.y(d.value); });
-}
+};

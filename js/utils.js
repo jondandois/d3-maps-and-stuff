@@ -35,7 +35,7 @@ Dashboard.utils = (function(){
       Dashboard.chart.plot_data(d);
       Dashboard.d3.div.transition()
         .duration(200)
-        .style("opacity", .9);
+        .style("opacity", 0.9);
         Dashboard.d3.div.text(`2010 ${d.properties['NAME']} ${Dashboard.property}: ${d.properties[Dashboard.property]}`)
         .style("left", (d3.event.pageX) + "px")
         .style("top", (d3.event.pageY - 28) + "px");
@@ -48,7 +48,7 @@ Dashboard.utils = (function(){
                   .translate([0,0]);
 
       var b = Dashboard.d3.path.bounds(map_data),
-          s = .95 / Math.max((b[1][0] - b[0][0]) / Dashboard.map.width, (b[1][1] - b[0][1]) / Dashboard.map.height),
+          s = 0.95 / Math.max((b[1][0] - b[0][0]) / Dashboard.map.width, (b[1][1] - b[0][1]) / Dashboard.map.height),
           t = [(Dashboard.map.width - s * (b[1][0] + b[0][0])) / 2, (Dashboard.map.height - s * (b[1][1] + b[0][1])) / 2];
 
       Dashboard.map.projection
