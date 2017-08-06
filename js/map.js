@@ -3,22 +3,9 @@ Dashboard.map = (function(){
     // callback for catching the json feature collection and adding it to the page
     load_and_draw_census_tracts: function(json_fc) {
       Dashboard.data = json_fc;
-      Dashboard.map.populate_dropdown(Dashboard.data);
+      Dashboard.utils.populate_dropdown(Dashboard.data);
       Dashboard.utils.reproject_map_to_data(json_fc);
       Dashboard.map.show_property_on_map(json_fc.features, Dashboard.property);
-    },
-
-    // populate the dropdown based on data
-    populate_dropdown: function(){
-      Dashboard.properties.forEach( function(property) {
-        var new_option = document.createElement('option');
-        new_option.setAttribute('value', property);
-        new_option.innerText = property;
-        if (property === Dashboard.property){
-          new_option.selected = true;
-        }
-        document.getElementById('filter-dropdown').appendChild(new_option);
-      });
     },
 
     // function for drawing features on the map based on a property

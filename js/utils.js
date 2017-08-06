@@ -1,6 +1,19 @@
 // utilities module
 Dashboard.utils = (function(){
   return {
+    // populate the dropdown based on data
+    populate_dropdown: function(){
+      Dashboard.properties.forEach( function(property) {
+        var new_option = document.createElement('option');
+        new_option.setAttribute('value', property);
+        new_option.innerText = property;
+        if (property === Dashboard.property){
+          new_option.selected = true;
+        }
+        document.getElementById('filter-dropdown').appendChild(new_option);
+      });
+    },
+
     // callback to catch change to the dropdown and do stuff
     catch_filter_change: function(event) {
       var selected = this.selectedIndex;
@@ -23,7 +36,7 @@ Dashboard.utils = (function(){
       Dashboard.d3.div.transition()
         .duration(200)
         .style("opacity", .9);
-        Dashboard.d3.div.text(`Census 2010 Count ${Dashboard.property}: ${d.properties[Dashboard.property]}`)
+        Dashboard.d3.div.text(`2010 ${d.properties['NAME']} ${Dashboard.property}: ${d.properties[Dashboard.property]}`)
         .style("left", (d3.event.pageX) + "px")
         .style("top", (d3.event.pageY - 28) + "px");
     },
@@ -45,7 +58,7 @@ Dashboard.utils = (function(){
 
     // build out the levels and a legend
     build_levels: function(features){
-      var range = Dashboard.utils.get_property_range(features, 'Population');
+      var range = Dashboard.utils.get_property_range(features, 'Total_Deaths');
       Dashboard.levels = Dashboard.utils.range_to_levels(range, Dashboard.d3.steps);
     },
 

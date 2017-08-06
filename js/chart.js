@@ -1,7 +1,7 @@
 Dashboard.chart = {};
 
 Dashboard.chart.margin = {top: 20, right: 30, bottom: 60, left: 40};
-Dashboard.chart.width = 350 - Dashboard.chart.margin.left - Dashboard.chart.margin.right;
+Dashboard.chart.width = 500 - Dashboard.chart.margin.left - Dashboard.chart.margin.right;
 Dashboard.chart.height = 250 - Dashboard.chart.margin.top - Dashboard.chart.margin.bottom;
 
 Dashboard.chart.x = d3.scale.ordinal()
@@ -24,10 +24,11 @@ function get_property_values (data, properties) {
 }
 
 Dashboard.chart.plot_data = function plot_data (data) {
-  var properties = Dashboard.properties.slice(Dashboard.properties.indexOf('Population')+1);
+  var properties = Dashboard.properties.slice(Dashboard.properties.indexOf('Total_Deaths')+1);
   var values = get_property_values(data, properties);
   Dashboard.chart.x.domain(properties);
-  Dashboard.chart.y.domain([0, d3.max(values.map(function(value){return value.value;}))]);
+  // Dashboard.chart.y.domain([0, d3.max(values.map(function(value){return value.value;}))]);
+  Dashboard.chart.y.domain([0, 10]);
 
   Dashboard.chart.svg.selectAll("*").remove();
   Dashboard.chart.svg.append("g")
@@ -36,9 +37,10 @@ Dashboard.chart.plot_data = function plot_data (data) {
       .call(d3.svg.axis().scale(Dashboard.chart.x).orient("bottom"))
     .selectAll('text')
       .attr("x", "-10")
-      .attr("y", "7")
-      .attr("transform", "rotate(-45)")
-      .style("text-anchor", "end");
+      .attr("y", "-3")
+      .attr("transform", "rotate(-90)")
+      .style("text-anchor", "end")
+      .style("font-size", "10px");
 
   Dashboard.chart.svg.append("g")
       .attr("class", "y axis")
