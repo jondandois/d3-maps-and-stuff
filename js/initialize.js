@@ -1,3 +1,14 @@
+// dashboard namespace
+window.Dashboard = {
+  container: {},
+  d3: {},
+  data: null,
+  initialize: null,
+  legend: {},
+  map: {},
+  utils: {}
+};
+
 Dashboard.initialize = function initialize () {
   //Width and height of map
   Dashboard.map.width = 400;
